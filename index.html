@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pin Generator</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="pin-generator half-width">
+                    <input class="form-control" id="pinDisplay" type="text">
+                    <button class="generate-btn" id="generateBtn">Generate Pin</button>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="input-section half-width">
+                    <input class="form-control" id="input-display" type="text">
+                    <div class="numbers">
+                        <div class="calc-body">
+                            <div class="calc-button-row">
+                              <div class="button" id="seven" onclick = "keyInteraction('seven')">7</div>
+                              <div class="button" id="eight" onclick = "keyInteraction('eight')">8</div>
+                              <div class="button" id="nine" onclick = "keyInteraction('nine')">9</div>
+                            </div>
+                            <div class="calc-button-row">
+                              <div class="button" id="four" onclick = "keyInteraction('four')">4</div>
+                              <div class="button" id="five" onclick = "keyInteraction('five')">5</div>
+                              <div class="button" id="six" onclick = "keyInteraction('six')">6</div>
+                            </div>
+                            <div class="calc-button-row">
+                              <div class="button" id="one" onclick="keyInteraction('one')">1</div>
+                              <div class="button" id="two" onclick = "keyInteraction('two')">2</div>
+                              <div class="button" id="three" onclick = "keyInteraction('three')">3</div>
+                            </div>
+                            <div class="calc-button-row">
+                                <div class="button" id="single-clear" > < </div>
+                                <div class="button" id="zero" onclick = "keyInteraction('zero')"> 0 </div>
+                                <div class="button" id="clear-all"> C </div>
+                            </div>
+                            <div>
+                                <button type="submit" id="submit-button" class="submit-btn">Submit</button>
+                                <p class="action-left" id="action-left"><span id="remaining-chance">3 </span> try left</p>
+                            </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="notify-section">
+            <p id="notify-cross">❌ Pin Didn't Match, Please try again</p>
+            <p id="notify-success">✅ Pin Matched... Secret door is opening for you</p>
+        </div>
+    </div>
+
+
+    <script>
+        /* <--Creating the Pin Number--> */
+        var pinCode;
+        document.getElementById("generateBtn").addEventListener("click", function(){
+            var randomNum = Math.round(Math.random()*10000);
+            if (randomNum > 1000) {
+                pinCode = randomNum;
+            }else{
+                for (let i = 1; i > 0; i++) {
+                    randomNum = Math.round(Math.random()*10000);
+                    if (randomNum > 1000) {
+                        pinCode = randomNum;
+                        break;
+                    }
+                }
+            }
+            document.getElementById("pinDisplay").value = pinCode;
+        })
+
+        /* <--Making Keys Interactive--> */
+        function keyInteraction(id) {
+            var keyValue = parseInt(document.getElementById(id).innerText);
+            var displayText = document.getElementById("input-display").value;
+           
+            if (displayText.length < 4) {
+                document.getElementById("input-display").value = displayText + "" + keyValue;
+            }
+            else{
+                alert("You cannot enter more then 3 digits.");
+            }
+            
+        }
+
+        /* <--Cleaning Display--> */
+        document.getElementById("clear-all").addEventListener("click", function(){
+            document.getElementById("input-display").value = "";
+        })
+
+        /* <--Clearing Display: One By One--> */
+        document.getElementById("single-clear").addEventListener("click", function(){
+            var screenNumber = document.getElementById("input-display").value;
+            var newScreenNumber = screenNumber.slice(0, -1);
+            document.getElementById("input-display").value = newScreenNumber;
+        })
+
+        /* <--Comparing Pin with Typed number & other stuffs--> */
+        var attemptCount = 0;
+        document.getElementById("submit-button").addEventListener("click", function(){
+            var screenNumber =  parseInt(document.getElementById("input-display").value);
+            
+            if (screenNumber == pinCode) {
+                document.getElementById("notify-success").style.display = "block";
+                document.getElementById("notify-cross").style.display = "none";
+                document.getElementById("submit-button").style.backgroundColor = "white";
+                document.getElementById("submit-button").style.color = "green"
+            }else if (screenNumber != pinCode) {
+                attemptCount++;
+                var counter = 3 - attemptCount;
+                document.getElementById("remaining-chance").innerText = counter;
+               
+                if (counter <= 3 && counter > 0) {
+                    document.getElementById("notify-cross").style.display = "block";
+                    document.getElementById("input-display").value = "";
+                    document.getElementById("submit-button").style.backgroundColor = "rgb(253, 7, 60)";
+                }else if (counter == 0) {
+                    document.getElementById("submit-button").disabled = true;
+                    document.getElementById("submit-button").style.backgroundColor = "grey";
+                    document.getElementById("action-left").style.display = "none";
+                }
+            }
+        })
+
+    </script>
+
+</body>
+</html>
